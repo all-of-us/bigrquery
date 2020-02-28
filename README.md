@@ -3,6 +3,22 @@
 
 # bigrquery
 
+## All of Us Patches
+
+- https://github.com/r-dbi/bigrquery/pull/353
+- https://github.com/r-dbi/bigrquery/pull/367
+
+This is currently forked from the latest production package release of 1.2.0.
+Once the above PRs are merged and released, we should remove this fork.
+
+To distinguish between this fork and the primary version, we include a "patch"
+suffix on the version number, e.g. "1.2.0-1", where the patch is the trailing
+"1". The expectation is that client will be installing this forked package via:
+
+```r
+devtools::install_github("all-of-us/bigrquery")
+```
+
 <!-- badges: start -->
 
 [![CRAN
