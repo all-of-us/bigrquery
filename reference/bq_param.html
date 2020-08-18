@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Table/dataset objects deprecated — id-dep • bigrquery</title>
+<title>Explicitly define query parameters — bq_param • bigrquery</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,10 @@
 
 
 
-<meta property="og:title" content="Table/dataset objects deprecated — id-dep" />
-<meta property="og:description" content="Please use bq_table and bq_dataset instead." />
+<meta property="og:title" content="Explicitly define query parameters — bq_param" />
+<meta property="og:description" content="By default, bigrquery will assume vectors of length 1 are scalars,
+and longer vectors are arrays. If you need to pass a length-1 array,
+you'll need to explicitly use bq_param_array()." />
 
 
 
@@ -121,25 +123,90 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Table/dataset objects <a href='https://rdrr.io/r/base/Deprecated.html'>deprecated</a></h1>
-    <small class="dont-index">Source: <a href='https://github.com/rstats-db/bigrquery/blob/master/R/old-id.R'><code>R/old-id.R</code></a></small>
-    <div class="hidden name"><code>id-dep.Rd</code></div>
+    <h1>Explicitly define query parameters</h1>
+    <small class="dont-index">Source: <a href='https://github.com/rstats-db/bigrquery/blob/master/R/bq-param.R'><code>R/bq-param.R</code></a></small>
+    <div class="hidden name"><code>bq_param.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Please use <a href='bq_refs.html'>bq_table</a> and <a href='bq_refs.html'>bq_dataset</a> instead.</p>
+    <p>By default, bigrquery will assume vectors of length 1 are scalars,
+and longer vectors are arrays. If you need to pass a length-1 array,
+you'll need to explicitly use <code>bq_param_array()</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>parse_dataset</span>(<span class='kw'>dataset</span>, project_id = <span class='kw'>NULL</span>)
+    <pre class="usage"><span class='fu'>bq_param</span>(<span class='kw'>value</span>, type = <span class='kw'>NULL</span>, name = <span class='kw'>NULL</span>)
 
-<span class='fu'>format_dataset</span>(<span class='kw'>project_id</span>, <span class='kw'>dataset</span>)
+<span class='fu'>bq_param_scalar</span>(<span class='kw'>value</span>, type = <span class='kw'>NULL</span>, name = <span class='kw'>NULL</span>)
 
-<span class='fu'>parse_table</span>(<span class='kw'>table</span>, project_id = <span class='kw'>NULL</span>)
+<span class='fu'>bq_param_array</span>(<span class='kw'>value</span>, type = <span class='kw'>NULL</span>, name = <span class='kw'>NULL</span>)</pre>
 
-<span class='fu'>format_table</span>(<span class='kw'>project_id</span>, <span class='kw'>dataset</span>, <span class='kw'>table</span>)</pre>
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>value</th>
+      <td><p>vector of parameter values</p></td>
+    </tr>
+    <tr>
+      <th>type</th>
+      <td><p>BigQuery type of the parameter</p></td>
+    </tr>
+    <tr>
+      <th>name</th>
+      <td><p>name of the parameter in the query, omitting the <code><a href='https://rdrr.io/r/base/slotOp.html'>@</a></code></p></td>
+    </tr>
+    </table>
 
 
-
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='co'># bq_param() automatically picks scalar vs array based on length</span>
+<span class='fu'>bq_param</span>(<span class='st'>"a"</span>)</div><div class='output co'>#&gt; {
+#&gt;   "name": {},
+#&gt;   "parameterType": {
+#&gt;     "type": "STRING"
+#&gt;   },
+#&gt;   "parameterValue": {
+#&gt;     "value": "a"
+#&gt;   }
+#&gt; }</div><div class='input'><span class='fu'>bq_param</span>(<span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>, <span class='st'>"c"</span>))</div><div class='output co'>#&gt; {
+#&gt;   "name": {},
+#&gt;   "parameterType": {
+#&gt;     "type": "ARRAY",
+#&gt;     "arrayType": {
+#&gt;       "type": "STRING"
+#&gt;     }
+#&gt;   },
+#&gt;   "parameterValue": {
+#&gt;     "arrayValues": [
+#&gt;       {
+#&gt;         "value": "a"
+#&gt;       },
+#&gt;       {
+#&gt;         "value": "b"
+#&gt;       },
+#&gt;       {
+#&gt;         "value": "c"
+#&gt;       }
+#&gt;     ]
+#&gt;   }
+#&gt; }</div><div class='input'>
+<span class='co'># use bq_param_array() to create a length-1 array</span>
+<span class='fu'>bq_param_array</span>(<span class='st'>"a"</span>)</div><div class='output co'>#&gt; {
+#&gt;   "name": {},
+#&gt;   "parameterType": {
+#&gt;     "type": "ARRAY",
+#&gt;     "arrayType": {
+#&gt;       "type": "STRING"
+#&gt;     }
+#&gt;   },
+#&gt;   "parameterValue": {
+#&gt;     "arrayValues": [
+#&gt;       {
+#&gt;         "value": "a"
+#&gt;       }
+#&gt;     ]
+#&gt;   }
+#&gt; }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
